@@ -1,0 +1,59 @@
+version: "2"
+services:
+  influxdb:
+    image: arm32v7/influxdb:latest
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      # Data persistency
+      # sudo mkdir -p /srv/docker/influxdb/data
+      - influxdb:/var/lib/influxdb
+    restart: always
+
+  telegraf:
+    image: arm32v7/telegraf:latest
+    container_name: telegraf
+    environment:
+      HOST_PROC: /host/proc
+      HOST_SYS: /host/sys
+      HOST_ETC: /host/etc
+      HOST_MOUNT_PREFIX: /host
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /:/host:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc:/host/etc:ro
+      - /var/run/utmp:/var/run/utmp:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: always
+    network_mode: "host"
+    depends_on:
+      - influxdb
+
+  grafana:
+    image: fg2it/grafana-armhf:v5.1.4
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      # Data persistency
+      # sudo mkdir -p /srv/docker/grafana/data; chown 472:472 /srv/docker/grafana/data
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    restart: always
+    depends_on:
+      - influxdb
+
+  ruuvitag_app:
+    build: ./ruuvitag_app
+    privileged: true
+    network_mode: "host"
+    depends_on:
+      - influxdb
+    restart: always
+
+volumes:
+  influxdb:
+  grafana-storage:
