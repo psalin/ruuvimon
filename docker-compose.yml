@@ -1,14 +1,27 @@
 version: "2"
 services:
+  # influxdb:
+  #   image: arm32v7/influxdb:latest
+  #   container_name: influxdb
+  #   ports:
+  #     - "8086:8086"
+  #   volumes:
+  #     # Data persistency
+  #     # sudo mkdir -p /srv/docker/influxdb/data
+  #     - influxdb:/var/lib/influxdb
+  #     - ./influx_exporter/backups:/home/backups
+  #   restart: always
+
   influxdb:
-    image: arm32v7/influxdb:latest
-    container_name: influxdb
+    build: ./influxdb
+    env_file: ./app.env
     ports:
       - "8086:8086"
     volumes:
       # Data persistency
       # sudo mkdir -p /srv/docker/influxdb/data
       - influxdb:/var/lib/influxdb
+      - ./influxdb/backups:/home/backups
     restart: always
 
   telegraf:
