@@ -18,8 +18,8 @@ function export_and_sync()
 	date --iso-8601=seconds > "${LAST_BACKUP}"
     fi
 
-    if [ ! -z "${EXPORT_SYNC_PATH}" ]; then
-	rsync -avz -e "ssh -p ${EXPORT_SYNC_PORT}" --ignore-existing --remove-source-files "${BACKUP_FILE_DIR}" "${EXPORT_SYNC_PATH}"
+    if [ ! -z "${RUUVIMON_EXPORT_SYNC_PATH}" ]; then
+	rsync -avz -e "ssh -p ${RUUVIMON_EXPORT_SYNC_PORT}" --ignore-existing --remove-source-files "${BACKUP_FILE_DIR}" "${RUUVIMON_EXPORT_SYNC_PATH}"
 	echo "$(date --iso-8601=seconds)" " sync:" "$?"  >> "${LOG_FILE}"
 	find "${BACKUP_FILE_DIR}" -type d -empty -delete
     fi
@@ -36,10 +36,10 @@ function import()
     done
 }
 
-echo "$(date --iso-8601=seconds)" " MODE=${MODE} EXPORT_SYNC_PATH=${EXPORT_SYNC_PATH}"  >> "${LOG_FILE}"
+echo "$(date --iso-8601=seconds)" " RUUVIMON_MODE=${RUUVIMON_MODE} RUUVIMON_EXPORT_SYNC_PATH=${RUUVIMON_EXPORT_SYNC_PATH}"  >> "${LOG_FILE}"
 
-if [ "${MODE}" = "import" ]; then
+if [ "${RUUVIMON_MODE}" = "import" ]; then
     import
-elif [ "${MODE}" = "export" ]; then
+elif [ "${RUUVIMON_MODE}" = "export" ]; then
     export_and_sync
 fi
