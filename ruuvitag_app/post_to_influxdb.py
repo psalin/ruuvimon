@@ -30,7 +30,8 @@ Add new graph to dashboard
 
 from influxdb import InfluxDBClient
 from ruuvitag_sensor.ruuvi import RuuviTagSensor
-
+import time
+import os
 
 def convert_to_influx(mac, payload):
     return {
@@ -55,6 +56,9 @@ if db_name not in databases:
     client.switch_database(db_name)
 
 while True:
-    datas = RuuviTagSensor.get_data_for_sensors()
-    json_body = [convert_to_influx(mac, payload) for mac, payload in datas.items()]
-    client.write_points(json_body)
+    if os.environ['RUUVIMON_MODE'] == 'import':
+        time.sleep(600)
+    else:
+        datas = RuuviTagSensor.get_data_for_sensors()
+        json_body = [convert_to_influx(mac, payload) for mac, payload in datas.items()]
+        client.write_points(json_body)
