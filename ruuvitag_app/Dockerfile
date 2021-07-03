@@ -1,11 +1,11 @@
-FROM buildpack-deps:stretch-curl
+FROM python:slim
 
 RUN \
-    apt-get update && apt-get install -qq -y python3-pip sudo bluetooth bluez blueman bluez-hcidump && \
-    pip3 install ruuvitag_sensor influxdb
+    apt update && \
+    apt install -qq -y sudo bluez bluez-hcidump && \
+    pip install --no-cache-dir ruuvitag_sensor influxdb
 
-ADD post_to_influxdb.py /home/
-
-WORKDIR /home
+WORKDIR /home/ruuvimon
+COPY post_to_influxdb.py ./
 
 CMD python3 post_to_influxdb.py
