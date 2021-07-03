@@ -1,4 +1,5 @@
-FROM arm32v7/influxdb:latest
+# Latest version 2.0+ doesn't support arm32v7
+FROM influxdb:1.8
 
 RUN apt-get update && apt-get -y install cron && apt-get -y install rsync && apt-get -y install openssh-client && apt-get -y install sudo
 
@@ -22,5 +23,3 @@ RUN crontab /etc/cron.d/import-export-cron
 
 # Run the command on container startup
 CMD printenv >> /etc/environment && cron && influxd
-
-
