@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BACKUP_BASE_DIR="/home/backups"
+BACKUP_BASE_DIR="/home/ruuvimon/backups"
 BACKUP_FILE_DIR="${BACKUP_BASE_DIR}/files"
 LAST_BACKUP="${BACKUP_BASE_DIR}/last_backup"
 LOG_FILE="${BACKUP_BASE_DIR}/log"

@@ -8,12 +8,14 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 RUN sudo apt-get install -y nodejs && sudo apt-get install -y build-essential
 RUN npm install --unsafe-perm -g @motleyagency/influxdb-incremental-restore
 
-ADD import_export.sh /home/
+WORKDIR /home/ruuvimon
+
+COPY import_export.sh ./
 
 RUN ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
 
 # Add crontab file in the cron directory
-ADD crontab /etc/cron.d/import-export-cron
+COPY crontab /etc/cron.d/import-export-cron
 
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/cron.d/import-export-cron

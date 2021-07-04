@@ -22,7 +22,7 @@ services:
       # sudo mkdir -p /srv/docker/influxdb/data
       - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
       - influxdb:/var/lib/influxdb
-      - ./influxdb/backups:/home/backups
+      - ./influxdb/backups:/home/ruuvimon/backups
     restart: always
 
   telegraf:
