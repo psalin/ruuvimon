@@ -1,7 +1,9 @@
 # Latest version 2.0+ doesn't support arm32v7
 FROM influxdb:1.8
 
-RUN apt-get update && apt-get -y install cron && apt-get -y install rsync && apt-get -y install openssh-client && apt-get -y install sudo
+RUN \
+    apt-get update && \
+    apt-get -y -q install openssh-client rsync sudo
 
 # Install influxdb-incremental-restore
 RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -10,18 +12,9 @@ RUN npm install --unsafe-perm -g @motleyagency/influxdb-incremental-restore
 
 WORKDIR /home/ruuvimon
 
+COPY entrypoint.sh ./
 COPY import_export.sh ./
 
 RUN ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
 
-# Add crontab file in the cron directory
-COPY crontab /etc/cron.d/import-export-cron
-
-# Give execution rights on the cron job
-RUN chmod 0644 /etc/cron.d/import-export-cron
-
-# Apply cron job
-RUN crontab /etc/cron.d/import-export-cron
-
-# Run the command on container startup
-CMD printenv >> /etc/environment && cron && influxd
+CMD ./entrypoint.sh
