@@ -1,9 +1,9 @@
 FROM python:slim
 
 RUN \
-    apt update && \
-    apt install -qq -y sudo bluez bluez-hcidump && \
-    pip install --no-cache-dir ruuvitag_sensor influxdb
+    apt-get update && \
+    apt-get -q -y install bluez bluez-hcidump sudo && \
+    pip install --no-cache-dir influxdb ruuvitag_sensor
 
 WORKDIR /home/ruuvimon
 COPY post_to_influxdb.py ./
