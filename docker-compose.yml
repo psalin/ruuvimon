@@ -14,7 +14,7 @@ services:
 
   influxdb:
     build: ./influxdb
-    env_file: ./app.env
+    env_file: ./.env
     ports:
       - "8086:8086"
     volumes:
@@ -61,7 +61,7 @@ services:
 
   ruuvitag_app:
     build: ./ruuvitag_app
-    env_file: ./app.env
+    env_file: ./.env
     privileged: true
     network_mode: "host"
     depends_on:
