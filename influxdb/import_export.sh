@@ -1,42 +1,61 @@
 #!/bin/bash
 
-BACKUP_BASE_DIR="/home/ruuvimon/backups"
-BACKUP_FILE_DIR="${BACKUP_BASE_DIR}/files"
-LAST_BACKUP="${BACKUP_BASE_DIR}/last_backup"
-LOG_FILE="${BACKUP_BASE_DIR}/log"
+BACKUP_DIR="/home/ruuvimon/backups"
+LAST_BACKUP="${BACKUP_DIR}/last_backup"
+LOG_FILE="imex.log"
+SSH_LOGIN_FILE="/run/secrets/ssh_login"
 
+
+function log()
+{
+    local -r msg="$1"
+    printf "$(date --iso-8601=seconds) %b" "${msg}\n" | tee -a "${LOG_FILE}" >&2
+}
+
+function sync_files_to_remote()
+{
+    rsync -avz -e "ssh -p ${IMEX_PORT}" --ignore-existing --remove-source-files "${BACKUP_DIR}/" "${IMEX_USER}@${IMEX_HOST}:${IMEX_PATH}"
+}
+
+function enable_key_based_login()
+{
+    sshpass -f "${SSH_LOGIN_FILE}" ssh-copy-id -o StrictHostKeyChecking=no -p "${IMEX_PORT}" "${IMEX_USER}@${IMEX_HOST}"
+}
 
 function export_and_sync()
 {
+    log "Exporting..."
     if [ ! -f "${LAST_BACKUP}" ]; then
 	last_backup=$(date --iso-8601=seconds)
-	influxd backup -portable -database tag_data "${BACKUP_FILE_DIR}/${last_backup}"
+	influxd backup -portable -database tag_data "${BACKUP_DIR}/${last_backup}"
 	echo "${last_backup}" > "${LAST_BACKUP}"
     else
 	last_backup=$(cat "${LAST_BACKUP}")
-	influxd backup -since "${last_backup}" -portable -database tag_data "${BACKUP_FILE_DIR}/${last_backup}"
+	influxd backup -since "${last_backup}" -portable -database tag_data "${BACKUP_DIR}/${last_backup}"
 	date --iso-8601=seconds > "${LAST_BACKUP}"
     fi
 
-    if [ ! -z "${RUUVIMON_EXPORT_SYNC_PATH}" ]; then
-	rsync -avz -e "ssh -p ${RUUVIMON_EXPORT_SYNC_PORT}" --ignore-existing --remove-source-files "${BACKUP_FILE_DIR}" "${RUUVIMON_EXPORT_SYNC_PATH}"
-	echo "$(date --iso-8601=seconds)" " sync:" "$?"  >> "${LOG_FILE}"
-	find "${BACKUP_FILE_DIR}" -type d -empty -delete
+    if [ -n "${IMEX_PATH}" ]; then
+        sync_files_to_remote || enable_key_based_login && sync_files_to_remote
+	find "${BACKUP_DIR}" -type d -empty -delete
     fi
 }
 
 function import()
 {
-    for dir in "${BACKUP_FILE_DIR}"/*/; do
+    if [ ! -e "${IMEX_PATH}" ]; then
+        mkdir -p "${IMEX_PATH}"
+    fi
+
+    log "Importing..."
+    for dir in "${IMEX_PATH}"/*/; do
         if  [ -d "${dir}" ]; then
             /usr/bin/influxdb-incremental-restore -db tag_data "${dir}"
-            echo "$(date --iso-8601=seconds)" " Incrementally restored ${dir}: $?" >> "${LOG_FILE}"
+            log "Incrementally restored ${dir}: $?"
             rm -rf "${dir}"
         fi
     done
 }
-
-echo "$(date --iso-8601=seconds)" " RUUVIMON_MODE=${RUUVIMON_MODE} RUUVIMON_EXPORT_SYNC_PATH=${RUUVIMON_EXPORT_SYNC_PATH}"  >> "${LOG_FILE}"
 
 if [ "${RUUVIMON_MODE}" = "import" ]; then
     import

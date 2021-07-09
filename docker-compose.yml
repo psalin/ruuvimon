@@ -17,13 +17,15 @@ services:
     env_file: ./.env
     ports:
       - "8086:8086"
+      - "${IMEX_PORT}:22"
     volumes:
       # Data persistency
       # sudo mkdir -p /srv/docker/influxdb/data
       - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
       - influxdb:/var/lib/influxdb
-      - ./influxdb/backups:/home/ruuvimon/backups
     restart: always
+    secrets:
+      - ssh_login
 
   telegraf:
     image: telegraf:latest
@@ -71,3 +73,7 @@ services:
 volumes:
   influxdb:
   grafana-storage:
+
+secrets:
+  ssh_login:
+    file: "${IMEX_PW_FILE}"

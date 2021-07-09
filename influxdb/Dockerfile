@@ -3,7 +3,7 @@ FROM influxdb:1.8
 
 RUN \
     apt-get update && \
-    apt-get -y -q install openssh-client rsync sudo
+    apt-get -y -q install openssh-client openssh-server rsync sshpass sudo
 
 # Install influxdb-incremental-restore
 RUN curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
@@ -14,7 +14,5 @@ WORKDIR /home/ruuvimon
 
 COPY entrypoint.sh ./
 COPY import_export.sh ./
-
-RUN ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
 
 CMD ./entrypoint.sh

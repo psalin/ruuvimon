@@ -1,11 +1,31 @@
 #!/bin/bash
 
-IMPORT_EXPORT_INTERVAL_MINS="${IMPORT_EXPORT_INTERVAL_MINS:-240}"
+SSH_LOGIN_FILE="/run/secrets/ssh_login"
+INTERVAL_MINS="${IMEX_INTERVAL_MINS}"
 
-while true
-do
-    ./import_export.sh
-    sleep $((IMPORT_EXPORT_INTERVAL_MINS*60))
-done &
+
+function start_ssh_server() {
+    ssh_login=$(cat "${SSH_LOGIN_FILE}")
+    echo "root:${ssh_login}" | chpasswd
+    sed -ri 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+    service ssh restart
+}
+
+# Generate SSH key
+ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+
+# In import mode, start a SSH server for receiving data
+if [[ "${RUUVIMON_MODE}" == "import" ]]; then
+    start_ssh_server
+fi
+
+# Run import/export in case enabled
+if [[ "${RUUVIMON_MODE}" != "standalone" ]]; then
+    while true
+    do
+        ./import_export.sh
+        sleep $((INTERVAL_MINS*60))
+    done &
+fi
 
 influxd
