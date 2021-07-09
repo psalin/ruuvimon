@@ -6,8 +6,8 @@ RUN \
     apt-get -y -q install openssh-client rsync sudo
 
 # Install influxdb-incremental-restore
-RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-RUN sudo apt-get install -y nodejs && sudo apt-get install -y build-essential
+RUN curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+RUN sudo apt-get install -y build-essential nodejs
 RUN npm install --unsafe-perm -g @motleyagency/influxdb-incremental-restore
 
 WORKDIR /home/ruuvimon
