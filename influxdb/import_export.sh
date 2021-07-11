@@ -4,6 +4,7 @@ BACKUP_DIR="/home/ruuvimon/backups"
 LAST_BACKUP="${BACKUP_DIR}/last_backup"
 LOG_FILE="imex.log"
 SSH_LOGIN_FILE="/run/secrets/ssh_login"
+DB_NAME="tag_data"
 
 
 function log()
@@ -27,11 +28,11 @@ function export_and_sync()
     log "Exporting..."
     if [ ! -f "${LAST_BACKUP}" ]; then
 	last_backup=$(date --iso-8601=seconds)
-	influxd backup -portable -database tag_data "${BACKUP_DIR}/${last_backup}"
+	influxd backup -portable -database "${DB_NAME}" "${BACKUP_DIR}/${last_backup}"
 	echo "${last_backup}" > "${LAST_BACKUP}"
     else
 	last_backup=$(cat "${LAST_BACKUP}")
-	influxd backup -since "${last_backup}" -portable -database tag_data "${BACKUP_DIR}/${last_backup}"
+	influxd backup -since "${last_backup}" -portable -database "${DB_NAME}" "${BACKUP_DIR}/${last_backup}"
 	date --iso-8601=seconds > "${LAST_BACKUP}"
     fi
 
@@ -50,7 +51,7 @@ function import()
     log "Importing..."
     for dir in "${IMEX_PATH}"/*/; do
         if  [ -d "${dir}" ]; then
-            /usr/bin/influxdb-incremental-restore -db tag_data "${dir}"
+            /usr/bin/influxdb-incremental-restore -db "${DB_NAME}" "${dir}"
             log "Incrementally restored ${dir}: $?"
             rm -rf "${dir}"
         fi
