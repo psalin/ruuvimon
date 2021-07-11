@@ -1,16 +1,5 @@
 version: "2"
 services:
-  # influxdb:
-  #   image: arm32v7/influxdb:latest
-  #   container_name: influxdb
-  #   ports:
-  #     - "8086:8086"
-  #   volumes:
-  #     # Data persistency
-  #     # sudo mkdir -p /srv/docker/influxdb/data
-  #     - influxdb:/var/lib/influxdb
-  #     - ./influx_exporter/backups:/home/backups
-  #   restart: always
 
   influxdb:
     build: ./influxdb
@@ -19,8 +8,6 @@ services:
       - "8086:8086"
       - "${IMEX_PORT}:22"
     volumes:
-      # Data persistency
-      # sudo mkdir -p /srv/docker/influxdb/data
       - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
       - influxdb:/var/lib/influxdb
     restart: always
@@ -53,8 +40,6 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # Data persistency
-      # sudo mkdir -p /srv/docker/grafana/data; chown 472:472 /srv/docker/grafana/data
       - grafana-storage:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     restart: always
