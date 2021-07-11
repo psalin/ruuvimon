@@ -5,7 +5,7 @@ services:
     build: ./influxdb
     env_file: ./.env
     ports:
-      - "8086:8086"
+      - "${INFLUXDB_HOST_PORT}:8086"
       - "${IMEX_PORT}:22"
     volumes:
       - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
@@ -38,7 +38,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "3000:3000"
+      - "${GRAFANA_HOST_PORT}:3000"
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/

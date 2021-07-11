@@ -54,7 +54,7 @@ class RuuviMon:
 
         self._db_name = 'tag_data'
         self._db_client = InfluxDBClient(host='localhost',
-                                         port=8086,
+                                         port=os.environ.get('INFLUXDB_HOST_PORT', 8086),
                                          database=self._db_name,
                                          retries=0)
 
