@@ -26,4 +26,10 @@ if [[ "${RUUVIMON_MODE}" != "standalone" ]]; then
     done &
 fi
 
-influxd
+INFLUXDB_HTTP_AUTH_ENABLED="${INFLUXDB_AUTH_ENABLED}" \
+                          INFLUXDB_ADMIN_USER="${INFLUXDB_USER}" \
+                          INFLUXDB_ADMIN_PASSWORD="${INFLUXDB_PASSWORD}" \
+                          /init-influxdb.sh
+
+INFLUXDB_HTTP_AUTH_ENABLED="${INFLUXDB_AUTH_ENABLED}" \
+                          influxd

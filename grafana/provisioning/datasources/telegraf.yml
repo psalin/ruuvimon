@@ -19,10 +19,11 @@ datasources:
     orgId: 1
     # <string> url
     url: http://influxdb:8086
-    # <string> database password, if used
-    password:
+    secureJsonData:
+      # <string> database password, if used
+      password: $INFLUXDB_PASSWORD
     # <string> database user, if used
-    user:
+    user: $INFLUXDB_USER
     # <string> database name, if used
     database: telegraf
     # <bool> enable/disable basic auth

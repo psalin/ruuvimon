@@ -56,6 +56,8 @@ class RuuviMon:
         self._db_client = InfluxDBClient(host='localhost',
                                          port=os.environ.get('INFLUXDB_HOST_PORT', 8086),
                                          database=self._db_name,
+                                         username=os.environ.get('INFLUXDB_USER', 'admin'),
+                                         password=os.environ.get('INFLUXDB_PASSWORD', ''),
                                          retries=0)
 
         databases = self._db_client.get_list_database()
