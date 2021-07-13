@@ -11,8 +11,6 @@ services:
       - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
       - influxdb:/var/lib/influxdb
     restart: always
-    secrets:
-      - ssh_login
 
   telegraf:
     image: telegraf:latest
@@ -58,7 +56,3 @@ services:
 volumes:
   influxdb:
   grafana-storage:
-
-secrets:
-  ssh_login:
-    file: "${IMEX_PW_FILE}"

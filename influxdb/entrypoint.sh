@@ -1,12 +1,10 @@
 #!/bin/bash
 
-SSH_LOGIN_FILE="/run/secrets/ssh_login"
 INTERVAL_MINS="${IMEX_INTERVAL_MINS}"
 
 
 function start_ssh_server() {
-    ssh_login=$(cat "${SSH_LOGIN_FILE}")
-    echo "root:${ssh_login}" | chpasswd
+    echo "root:${IMEX_PASSWORD}" | chpasswd
     sed -ri 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
     service ssh restart
 }

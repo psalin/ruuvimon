@@ -3,7 +3,6 @@
 BACKUP_DIR="/home/ruuvimon/backups"
 LAST_BACKUP="${BACKUP_DIR}/last_backup"
 LOG_FILE="imex.log"
-SSH_LOGIN_FILE="/run/secrets/ssh_login"
 DB_NAME="tag_data"
 
 
@@ -20,7 +19,7 @@ function sync_files_to_remote()
 
 function enable_key_based_login()
 {
-    sshpass -f "${SSH_LOGIN_FILE}" ssh-copy-id -o StrictHostKeyChecking=no -p "${IMEX_PORT}" "${IMEX_USER}@${IMEX_HOST}"
+    sshpass -p "${IMEX_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no -p "${IMEX_PORT}" "${IMEX_USER}@${IMEX_HOST}"
 }
 
 function export_and_sync()
