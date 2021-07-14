@@ -33,8 +33,13 @@ from influxdb import InfluxDBClient
 from ruuvitag_sensor.ruuvi import RuuviTagSensor
 
 import datetime
+import logging
 import os
 import time
+import urllib3
+
+urllib3.disable_warnings()
+logger = logging.getLogger(__name__)
 
 
 class RuuviMon:
@@ -56,18 +61,30 @@ class RuuviMon:
 
         ssl_enabled_str = os.environ.get('INFLUXDB_HTTPS_ENABLED', 'True')
         ssl_enabled = ssl_enabled_str.lower() in ['true', '1', 'y', 'yes']
+        influxdb_port = os.environ.get('INFLUXDB_HOST_PORT', 8086)
+        influxdb_user = os.environ.get('INFLUXDB_USER', 'admin')
+
+        logger.info('Connecting to InfluxDB: %s@localhost:%s, ssl=%s',
+                    influxdb_user,
+                    influxdb_port,
+                    ssl_enabled)
         self._db_client = InfluxDBClient(host='localhost',
-                                         port=os.environ.get('INFLUXDB_HOST_PORT', 8086),
+                                         port=influxdb_port,
                                          database=self._db_name,
-                                         username=os.environ.get('INFLUXDB_USER', 'admin'),
+                                         username=influxdb_user,
                                          password=os.environ.get('INFLUXDB_PASSWORD', ''),
                                          ssl=ssl_enabled,
                                          retries=0)
 
         databases = self._db_client.get_list_database()
         if self._db_name not in databases:
+            logger.info('Initializing database: %s', self._db_name)
             self._db_client.create_database(self._db_name)
             self._db_client.switch_database(self._db_name)
+
+        logger.info('RUUVIMON_FIELDS: %s', self._values_to_save)
+        logger.info('RUUVIMON_SAMPLE_INTERVAL_SEC: %s', self._sample_interval_sec)
+        logger.info('RUUVIMON_STORE_CHANGES_ONLY: %s', self._store_changes_only)
 
     def _write_to_influx(self, mac, fields):
         influx_data = [{
@@ -78,7 +95,7 @@ class RuuviMon:
             'fields': fields
         }]
 
-        print('Data to Influx: ', influx_data)
+        logger.debug('Writing data to DB: %s', influx_data)
         self._db_client.write_points(influx_data)
 
     def _update_value(self, mac, field_name, field_value):
@@ -88,10 +105,10 @@ class RuuviMon:
         curr_value = self._last_values[mac].get(field_name)
         if not curr_value or curr_value != field_value:
             self._last_values[mac][field_name] = field_value
-            print('Value changed: ', field_name, field_value)
+            logger.debug('Value changed: %s=%s', field_name, field_value)
             return True
 
-        print('Value did not change: ', field_name, field_value)
+        logger.debug('Value did not change: %s=%s', field_name, field_value)
         return False
 
     def _handle_new_data(self, mac, fields):
@@ -105,15 +122,18 @@ class RuuviMon:
             self._write_to_influx(mac, values_to_db)
 
     def monitor(self):
+        logger.info('Starting monitoring...')
         while True:
             datas = RuuviTagSensor.get_data_for_sensors()
-            print('New data: ', datas)
+            logger.debug('New data from sensor: %s', datas)
 
             time_now = datetime.datetime.now()
             if self._last_sample_time:
                 time_diff = time_now - self._last_sample_time
                 if time_diff.total_seconds() < self._sample_interval_sec:
-                    print('Not yet time for a new sample: ', time_diff.total_seconds())
+                    logger.debug('Sample interval %s secs not yet reached: %s',
+                                 self._sample_interval_sec,
+                                 time_diff.total_seconds())
                     continue
 
             for mac, fields in datas.items():
@@ -123,6 +143,15 @@ class RuuviMon:
 
 
 if __name__ == '__main__':
+    # Set up logging
+    log_level = str(os.environ.get('RUUVIMON_APP_LOG_LEVEL', 'INFO'))
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        '%(asctime)s | %(name)s | %(levelname)s | %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(log_level)
+
     ruuvi_mon = RuuviMon()
 
     # Don't collect data in import mode
