@@ -55,7 +55,7 @@ function import()
     log "Importing..."
     for dir in "${IMEX_PATH}"/*/; do
         if  [ -d "${dir}" ]; then
-            /usr/bin/influxdb-incremental-restore ${ssl_options} -db "${DB_NAME}" -username "${INFLUXDB_USER}" -password "${INFLUXDB_PASSWORD}" "${dir}"
+            /usr/bin/influxdb-incremental-restore "${ssl_options}" -db "${DB_NAME}" -username "${INFLUXDB_USER}" -password "${INFLUXDB_PASSWORD}" "${dir}"
             log "Incrementally restored ${dir}: $?"
             rm -rf "${dir}"
         fi

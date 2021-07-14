@@ -17,7 +17,7 @@ function auto_generate_influxdb_password()
 {
     if grep -Fxq "INFLUXDB_PASSWORD=<auto-generate>" .env; then
         local -r new_password=$(generate_password)
-        replace_password_in_env_file ${new_password}
+        replace_password_in_env_file "${new_password}"
     fi
 }
 
