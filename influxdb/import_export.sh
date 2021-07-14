@@ -9,7 +9,7 @@ DB_NAME="tag_data"
 function log()
 {
     local -r msg="$1"
-    printf "$(date --iso-8601=seconds) %b" "${msg}\n" | tee -a "${LOG_FILE}" >&2
+    printf "$(date +"%Y-%m-%d %H:%M:%S") %b" "${msg}\n" | tee -a "${LOG_FILE}" >&2
 }
 
 function sync_files_to_remote()
