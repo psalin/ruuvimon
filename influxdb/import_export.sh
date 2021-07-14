@@ -47,10 +47,15 @@ function import()
         mkdir -p "${IMEX_PATH}"
     fi
 
+    local ssl_options=""
+    if [[ "${INFLUXDB_HTTPS_ENABLED}" == "true" ]]; then
+        ssl_options="-ssl -unsafeSsl"
+    fi
+
     log "Importing..."
     for dir in "${IMEX_PATH}"/*/; do
         if  [ -d "${dir}" ]; then
-            /usr/bin/influxdb-incremental-restore -db "${DB_NAME}" -username "${INFLUXDB_USER}" -password "${INFLUXDB_PASSWORD}" "${dir}"
+            /usr/bin/influxdb-incremental-restore ${ssl_options} -db "${DB_NAME}" -username "${INFLUXDB_USER}" -password "${INFLUXDB_PASSWORD}" "${dir}"
             log "Incrementally restored ${dir}: $?"
             rm -rf "${dir}"
         fi

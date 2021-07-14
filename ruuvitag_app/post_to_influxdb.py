@@ -53,11 +53,15 @@ class RuuviMon:
         self._last_sample_time = None
 
         self._db_name = 'tag_data'
+
+        ssl_enabled_str = os.environ.get('INFLUXDB_HTTPS_ENABLED', 'True')
+        ssl_enabled = ssl_enabled_str.lower() in ['true', '1', 'y', 'yes']
         self._db_client = InfluxDBClient(host='localhost',
                                          port=os.environ.get('INFLUXDB_HOST_PORT', 8086),
                                          database=self._db_name,
                                          username=os.environ.get('INFLUXDB_USER', 'admin'),
                                          password=os.environ.get('INFLUXDB_PASSWORD', ''),
+                                         ssl=ssl_enabled,
                                          retries=0)
 
         databases = self._db_client.get_list_database()

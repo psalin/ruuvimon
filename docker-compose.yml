@@ -13,7 +13,7 @@ services:
     restart: always
 
   telegraf:
-    image: telegraf:latest
+    build: ./telegraf
     container_name: telegraf
     environment:
       HOST_PROC: /host/proc
@@ -22,6 +22,7 @@ services:
       HOST_MOUNT_PREFIX: /host
       INFLUXDB_USER: ${INFLUXDB_USER}
       INFLUXDB_PASSWORD: ${INFLUXDB_PASSWORD}
+      INFLUXDB_HTTPS_ENABLED: ${INFLUXDB_HTTPS_ENABLED}
     volumes:
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
       - /:/host:ro
@@ -42,6 +43,7 @@ services:
     environment:
       INFLUXDB_USER: ${INFLUXDB_USER}
       INFLUXDB_PASSWORD: ${INFLUXDB_PASSWORD}
+      INFLUXDB_HTTPS_ENABLED: ${INFLUXDB_HTTPS_ENABLED}
       GRAFANA_AUTH_ENABLED: ${GRAFANA_AUTH_ENABLED}
     volumes:
       - grafana-storage:/var/lib/grafana
