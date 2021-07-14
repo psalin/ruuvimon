@@ -6,6 +6,6 @@ RUN \
     pip install --no-cache-dir influxdb ruuvitag_sensor
 
 WORKDIR /home/ruuvimon
-COPY post_to_influxdb.py ./
+COPY ruuvimon.py ./
 
-CMD python3 post_to_influxdb.py
+CMD python3 ruuvimon.py
