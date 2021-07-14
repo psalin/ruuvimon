@@ -45,6 +45,7 @@ services:
       INFLUXDB_PASSWORD: ${INFLUXDB_PASSWORD}
       INFLUXDB_HTTPS_ENABLED: ${INFLUXDB_HTTPS_ENABLED}
       GRAFANA_AUTH_ENABLED: ${GRAFANA_AUTH_ENABLED}
+      GRAFANA_HTTPS_ENABLED: ${GRAFANA_HTTPS_ENABLED}
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
