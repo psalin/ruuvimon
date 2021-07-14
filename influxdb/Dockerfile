@@ -12,7 +12,7 @@ RUN npm install --unsafe-perm -g @motleyagency/influxdb-incremental-restore
 
 WORKDIR /home/ruuvimon
 
-COPY entrypoint.sh ./
+COPY my-entrypoint.sh ./
 COPY import_export.sh ./
 
-CMD ./entrypoint.sh
+CMD ./my-entrypoint.sh

@@ -13,6 +13,7 @@ function replace_password_in_env_file()
     sed -i -e "s/INFLUXDB_PASSWORD=<auto-generate>/INFLUXDB_PASSWORD=${password}/g" .env
 }
 
+# Auto-generates a password for InfluxDB and sets it in the .env file if needed
 function auto_generate_influxdb_password()
 {
     if grep -Fxq "INFLUXDB_PASSWORD=<auto-generate>" .env; then

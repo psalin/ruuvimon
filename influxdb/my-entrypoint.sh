@@ -27,15 +27,18 @@ if [[ "${RUUVIMON_MODE}" != "standalone" ]]; then
     done &
 fi
 
+# If HTTPS is enabled, generate a self-signed cert
 if [[ "${INFLUXDB_HTTPS_ENABLED}" == "true" ]]; then
     openssl req -x509 -nodes -newkey rsa:2048 -keyout "${SSL_KEY}" -out "${SSL_CERT}" -days 3650 -subj "/O=Ruuvimon/OU=Ruuvimon/CN=localhost"
 fi
 
+# Init the database admin
 INFLUXDB_HTTP_AUTH_ENABLED="${INFLUXDB_AUTH_ENABLED}" \
                           INFLUXDB_ADMIN_USER="${INFLUXDB_USER}" \
                           INFLUXDB_ADMIN_PASSWORD="${INFLUXDB_PASSWORD}" \
                           /init-influxdb.sh
 
+# Start influxd
 INFLUXDB_HTTP_AUTH_ENABLED="${INFLUXDB_AUTH_ENABLED}" \
                           INFLUXDB_HTTP_HTTPS_CERTIFICATE="${SSL_CERT}" \
                           INFLUXDB_HTTP_HTTPS_PRIVATE_KEY="${SSL_KEY}" \

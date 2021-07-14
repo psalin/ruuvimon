@@ -1,5 +1,5 @@
 FROM grafana/grafana:latest
 
-COPY entrypoint.sh /entrypoint.sh
+COPY my-entrypoint.sh /my-entrypoint.sh
 
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT /my-entrypoint.sh
