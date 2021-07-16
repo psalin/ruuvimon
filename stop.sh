@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Ruuvimon stop script
+# RuuviMon stop script
 
 function usage() {
        cat << HEREDOC

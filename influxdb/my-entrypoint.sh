@@ -30,7 +30,7 @@ fi
 # If HTTPS is enabled, generate a self-signed cert
 if [[ "${INFLUXDB_HTTPS_ENABLED}" == "true" ]]; then
     if [[ ! -e "${SSL_CERT}" ]]; then
-        openssl req -x509 -nodes -newkey rsa:2048 -keyout "${SSL_KEY}" -out "${SSL_CERT}" -days 3650 -subj "/O=Ruuvimon/OU=Ruuvimon/CN=localhost"
+        openssl req -x509 -nodes -newkey rsa:2048 -keyout "${SSL_KEY}" -out "${SSL_CERT}" -days 3650 -subj "/O=RuuviMon/OU=RuuviMon/CN=localhost"
     fi
 fi
 

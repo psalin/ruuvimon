@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Ruuvimon startup script
+# RuuviMon startup script
 
 function generate_password()
 {
