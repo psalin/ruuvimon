@@ -14,7 +14,6 @@ services:
 
   telegraf:
     build: ./telegraf
-    container_name: telegraf
     environment:
       HOST_PROC: /host/proc
       HOST_SYS: /host/sys
@@ -37,7 +36,6 @@ services:
 
   grafana:
     build: ./grafana
-    container_name: grafana
     ports:
       - "${GRAFANA_HOST_PORT}:3000"
     environment:
