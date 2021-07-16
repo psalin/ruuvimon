@@ -29,7 +29,9 @@ fi
 
 # If HTTPS is enabled, generate a self-signed cert
 if [[ "${INFLUXDB_HTTPS_ENABLED}" == "true" ]]; then
-    openssl req -x509 -nodes -newkey rsa:2048 -keyout "${SSL_KEY}" -out "${SSL_CERT}" -days 3650 -subj "/O=Ruuvimon/OU=Ruuvimon/CN=localhost"
+    if [[ ! -e "${SSL_CERT}" ]]; then
+        openssl req -x509 -nodes -newkey rsa:2048 -keyout "${SSL_KEY}" -out "${SSL_CERT}" -days 3650 -subj "/O=Ruuvimon/OU=Ruuvimon/CN=localhost"
+    fi
 fi
 
 # Init the database admin
