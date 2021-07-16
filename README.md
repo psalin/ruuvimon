@@ -56,6 +56,13 @@ In order to stop the RuuviMon application run:
 ./stop.sh
 ```
 
+In order to stop the RuuviMon application and remove its containers run:
+
+```sh
+./stop.sh --remove
+```
+
+
 ## Import/export mode
 
 In addition to the normal standalone mode, RuuviMon also supports import/export modes. The collecting RuuviMon app can export data to another RuuviMon app running in import mode. This enables running RuuviMon in a remote location with data restricted Internet access. The RuuviMon application running in import mode provides the user with access to view collected data without affecting the data rates at the software collecting data remotely.
